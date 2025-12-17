@@ -9,9 +9,7 @@ if wezterm.config_builder then
   config = wezterm.config_builder()
 end
 
--- ============================================================================
 -- DEFAULT SHELL (Windows/WSL)
--- ============================================================================
 
 config.default_prog = { "wsl.exe", "-d", "Ubuntu", "--", "zsh", "-c", "cd ~ && exec zsh" }
 
@@ -38,10 +36,7 @@ config.launch_menu = {
     args = { 'cmd.exe' },
   },
 }
-
--- ============================================================================
 -- KEY MAPPINGS
--- ============================================================================
 config.keys = {
   -- Tab navigation
   { key = 'Tab', mods = 'CTRL', action = wezterm.action.ActivateTabRelative(1) },
@@ -67,15 +62,12 @@ config.keys = {
   { key = '8', mods = 'ALT', action = wezterm.action.ActivateTab(7) },
   { key = '9', mods = 'ALT', action = wezterm.action.ActivateTab(8) },
 }
+config.font = wezterm.font_with_fallback({
+  { family = "IBM Plex Mono", weight = "Regular" },
+  { family = "JetBrainsMono Nerd Font", weight = "Medium" },
+})
 
--- ============================================================================
--- APPEARANCE
--- ============================================================================
-
-config.color_scheme = 'Tokyo Night'
-config.font = wezterm.font('JetBrainsMono Nerd Font', { weight = 'Medium' })
 config.font_size = 15.0
-
 -- Tab bar settings
 config.enable_tab_bar = true
 config.hide_tab_bar_if_only_one_tab = false
@@ -89,10 +81,13 @@ config.window_padding = {
   bottom = 0,
 }
 
--- ============================================================================
 -- PERFORMANCE & BEHAVIOR
--- ============================================================================
-
+config.colors = {
+  cursor_bg = "#FFFFFF",
+  cursor_fg = "#000000",
+  cursor_border = "#FFFFFF",
+}
+config.default_cursor_style = "BlinkingBlock"
 config.enable_scroll_bar = false
 config.scrollback_lines = 10000
 config.audible_bell = 'Disabled'
