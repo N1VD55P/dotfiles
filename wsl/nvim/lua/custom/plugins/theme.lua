@@ -6,11 +6,11 @@ return {
 		config = function()
 			require("nightfox").setup({
 				options = {
-					transparent = true, -- ✅ Enable transparent background
+					transparent = false, 
 				},
-				flavour = "carbonfox", -- Set the theme to Mocha
+				flavour = "duskfox",
 			})
-			vim.cmd.colorscheme("carbonfox") -- Apply the theme
+			vim.cmd.colorscheme("duskfox") -- Apply the theme
 		end,
 	},
 }
