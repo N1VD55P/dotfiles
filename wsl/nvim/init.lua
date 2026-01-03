@@ -28,5 +28,6 @@ require("lazy").setup({
 	{ import = "custom.plugins.none-ls" },
 	{ import = "custom.plugins.replace" },
 	{ import = "custom.plugins.debugging" },
-	{ import = "custom.plugins.font"}
+	{ import = "custom.plugins.font"},
+	{ import = "custom.plugins.indent"}
 })
