@@ -1,5 +1,4 @@
--- WezTerm Configuration
--- File: %USERPROFILE%\.wezterm.lua (Windows)
+-- Unified WezTerm Configuration (Windows + Debian Linux)
 
 local wezterm = require 'wezterm'
 local config = {}
@@ -7,97 +6,153 @@ local config = {}
 -- Use config builder if available
 if wezterm.config_builder then
   config = wezterm.config_builder()
-end
+  end
 
--- DEFAULT SHELL (Windows/WSL)
+  -- Detect OS
+  local is_windows = wezterm.target_triple:find("windows") ~= nil
+  local is_linux = wezterm.target_triple:find("linux") ~= nil
 
-config.default_prog = { "wsl.exe", "-d", "Ubuntu", "--", "zsh", "-c", "cd ~ && exec zsh" }
+  --------------------------------------------------
+  -- DEFAULT SHELL / LAUNCH MENU
+  --------------------------------------------------
 
--- Launch Menu - Multiple shell options
-config.launch_menu = {
-  {
-    label = 'WSL Ubuntu (Zsh)',
-    args = { 'wsl.exe', '-d', 'Ubuntu', '--', 'zsh', '-c', 'cd ~ && exec zsh' },
-  },
-  {
-    label = 'WSL Ubuntu (Bash)',
-    args = { 'wsl.exe', '-d', 'Ubuntu', '--', 'bash', '-c', 'cd ~ && exec bash' },
-  },
-  {
-    label = 'PowerShell',
-    args = { 'powershell.exe', '-NoLogo' },
-  },
-  {
-    label = 'PowerShell Core',
-    args = { 'pwsh.exe', '-NoLogo' },
-  },
-  {
-    label = 'Command Prompt',
-    args = { 'cmd.exe' },
-  },
-}
--- KEY MAPPINGS
-config.keys = {
-  -- Tab navigation
-  { key = 'Tab', mods = 'CTRL', action = wezterm.action.ActivateTabRelative(1) },
-  { key = 'Tab', mods = 'CTRL|SHIFT', action = wezterm.action.ActivateTabRelative(-1) },
-  
-  -- Create new tab
-  { key = 't', mods = 'CTRL|SHIFT', action = wezterm.action.SpawnTab 'CurrentPaneDomain' },
-  
-  -- Close current tab
-  { key = 'w', mods = 'CTRL|SHIFT', action = wezterm.action.CloseCurrentTab{ confirm = true } },
-  
-  -- Show launch menu
-  { key = 'l', mods = 'CTRL|SHIFT', action = wezterm.action.ShowLauncher },
-  
-  -- Switch to specific tabs
-  { key = '1', mods = 'ALT', action = wezterm.action.ActivateTab(0) },
-  { key = '2', mods = 'ALT', action = wezterm.action.ActivateTab(1) },
-  { key = '3', mods = 'ALT', action = wezterm.action.ActivateTab(2) },
-  { key = '4', mods = 'ALT', action = wezterm.action.ActivateTab(3) },
-  { key = '5', mods = 'ALT', action = wezterm.action.ActivateTab(4) },
-  { key = '6', mods = 'ALT', action = wezterm.action.ActivateTab(5) },
-  { key = '7', mods = 'ALT', action = wezterm.action.ActivateTab(6) },
-  { key = '8', mods = 'ALT', action = wezterm.action.ActivateTab(7) },
-  { key = '9', mods = 'ALT', action = wezterm.action.ActivateTab(8) },
-}
-config.font = wezterm.font_with_fallback({
-  { family = "IBM Plex Mono", weight = "Regular" },
-  { family = "JetBrainsMono Nerd Font", weight = "Medium" },
-})
+  if is_windows then
+    -- Windows: Default to WSL Ubuntu with zsh
+    config.default_prog = {
+      "wsl.exe",
+      "-d", "Ubuntu",
+      "--",
+      "zsh",
+      "-c",
+      "cd ~ && exec zsh"
+    }
 
-config.font_size = 15.0
--- Tab bar settings
-config.enable_tab_bar = true
-config.hide_tab_bar_if_only_one_tab = false
-config.use_fancy_tab_bar = true
+    config.launch_menu = {
+      {
+        label = 'WSL Ubuntu (Zsh)',
+        args = { 'wsl.exe', '-d', 'Ubuntu', '--', 'zsh', '-c', 'cd ~ && exec zsh' },
+      },
+      {
+        label = 'WSL Ubuntu (Bash)',
+        args = { 'wsl.exe', '-d', 'Ubuntu', '--', 'bash', '-c', 'cd ~ && exec bash' },
+      },
+      {
+        label = 'PowerShell',
+        args = { 'powershell.exe', '-NoLogo' },
+      },
+      {
+        label = 'PowerShell Core',
+        args = { 'pwsh.exe', '-NoLogo' },
+      },
+      {
+        label = 'Command Prompt',
+        args = { 'cmd.exe' },
+      },
+    }
+    end
 
--- Window padding
-config.window_padding = {
-  left = 2,
-  right = 2,
-  top = 0,
-  bottom = 0,
-}
+    if is_linux then
+      -- Linux: Native zsh
+      config.default_prog = { "/usr/bin/zsh", "-l" }
+      end
 
--- PERFORMANCE & BEHAVIOR
-config.colors = {
-  cursor_bg = "#FFFFFF",
-  cursor_fg = "#000000",
-  cursor_border = "#FFFFFF",
-}
-config.default_cursor_style = "BlinkingBlock"
-config.enable_scroll_bar = false
-config.scrollback_lines = 10000
-config.audible_bell = 'Disabled'
+      --------------------------------------------------
+      -- KEY MAPPINGS
+      --------------------------------------------------
 
--- Window settings
-config.window_decorations = 'RESIZE'
-config.window_close_confirmation = 'NeverPrompt'
+      config.keys = {
+        -- CapsLock → Escape (mainly for Linux / Neovim)
+        {
+          key = 'CapsLock',
+          action = wezterm.action.SendString('\x1b'),
+        },
 
--- Launch maximized
-config.initial_rows = 999
-config.initial_cols = 999
+        -- Tab navigation
+        { key = 'Tab', mods = 'CTRL',       action = wezterm.action.ActivateTabRelative(1) },
+        { key = 'Tab', mods = 'CTRL|SHIFT', action = wezterm.action.ActivateTabRelative(-1) },
 
-return config
+        -- New tab
+        { key = 't', mods = 'CTRL|SHIFT', action = wezterm.action.SpawnTab 'CurrentPaneDomain' },
+
+        -- Close tab
+        { key = 'w', mods = 'CTRL|SHIFT', action = wezterm.action.CloseCurrentTab { confirm = true } },
+
+        -- Launcher
+        { key = 'l', mods = 'CTRL|SHIFT', action = wezterm.action.ShowLauncher },
+
+        -- Direct tab access
+        { key = '1', mods = 'ALT', action = wezterm.action.ActivateTab(0) },
+        { key = '2', mods = 'ALT', action = wezterm.action.ActivateTab(1) },
+        { key = '3', mods = 'ALT', action = wezterm.action.ActivateTab(2) },
+        { key = '4', mods = 'ALT', action = wezterm.action.ActivateTab(3) },
+        { key = '5', mods = 'ALT', action = wezterm.action.ActivateTab(4) },
+        { key = '6', mods = 'ALT', action = wezterm.action.ActivateTab(5) },
+        { key = '7', mods = 'ALT', action = wezterm.action.ActivateTab(6) },
+        { key = '8', mods = 'ALT', action = wezterm.action.ActivateTab(7) },
+        { key = '9', mods = 'ALT', action = wezterm.action.ActivateTab(8) },
+      }
+
+      --------------------------------------------------
+      -- FONT
+      --------------------------------------------------
+
+      config.font = wezterm.font_with_fallback({
+        { family = "IBM Plex Mono", weight = "Regular" },
+        { family = "JetBrainsMono Nerd Font", weight = "Medium" },
+      })
+
+      config.font_size = 15.0
+
+      --------------------------------------------------
+      -- TAB BAR
+      --------------------------------------------------
+
+      config.enable_tab_bar = true
+      config.hide_tab_bar_if_only_one_tab = false
+      config.use_fancy_tab_bar = true
+
+      --------------------------------------------------
+      -- WINDOW APPEARANCE
+      --------------------------------------------------
+
+      config.window_padding = {
+        left = 2,
+        right = 2,
+        top = 0,
+        bottom = 0,
+      }
+
+      config.window_decorations = 'RESIZE'
+      config.window_close_confirmation = 'NeverPrompt'
+
+      --------------------------------------------------
+      -- CURSOR & PERFORMANCE
+      --------------------------------------------------
+
+      config.colors = {
+        cursor_bg = "#FFFFFF",
+        cursor_fg = "#000000",
+        cursor_border = "#FFFFFF",
+      }
+
+      config.default_cursor_style = "BlinkingBlock"
+      config.enable_scroll_bar = false
+      config.scrollback_lines = 10000
+      config.audible_bell = 'Disabled'
+
+      --------------------------------------------------
+      -- INITIAL WINDOW SIZE
+      --------------------------------------------------
+
+      if is_windows then
+        -- Effectively maximized
+        config.initial_rows = 999
+        config.initial_cols = 999
+        else
+          config.initial_rows = 40
+          config.initial_cols = 140
+          end
+
+          --------------------------------------------------
+
+          return config
