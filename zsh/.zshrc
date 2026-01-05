@@ -8,7 +8,7 @@ export ZSH="$HOME/.oh-my-zsh"
 
 # Set theme
 ZSH_THEME="powerlevel10k/powerlevel10k"
-
+export PATH="/snap/bin:$PATH"
 # Enable command auto-correction
 ENABLE_CORRECTION="true"
 
