@@ -1,4 +1,3 @@
-
 return {
   {
     "hrsh7th/cmp-nvim-lsp"
@@ -29,6 +28,11 @@ return {
 
       require("luasnip.loaders.from_vscode").lazy_load()
 
+      -- Define highlight groups matching theme with white border
+      vim.api.nvim_set_hl(0, 'CmpSelection', { bg = '#4a4a4a', fg = '#e0e0e0' })
+      vim.api.nvim_set_hl(0, 'CmpNormal', { bg = '#232136' })
+      vim.api.nvim_set_hl(0, 'CmpBorder', { fg = '#ffffff' })
+
       cmp.setup({
         snippet = {
           expand = function(args)
@@ -36,8 +40,14 @@ return {
           end,
         },
         window = {
-          completion = cmp.config.window.bordered(),
-          documentation = cmp.config.window.bordered(),
+          completion = cmp.config.window.bordered({
+            border = "rounded",
+            winhighlight = "Normal:CmpNormal,FloatBorder:CmpBorder,CursorLine:CmpSelection,Search:None",
+          }),
+          documentation = cmp.config.window.bordered({
+            border = "rounded",
+            winhighlight = "Normal:CmpDocNormal,FloatBorder:CmpDocBorder",
+          }),
         },
         mapping = cmp.mapping.preset.insert({
           ["<C-j>"] = cmp.mapping(function(fallback)
@@ -62,7 +72,19 @@ return {
 
           ["<Tab>"] = cmp.mapping(function(fallback)
             if cmp.visible() then
-              cmp.abort() -- close the completion menu
+              cmp.select_next_item()
+            elseif luasnip.expand_or_jumpable() then
+              luasnip.expand_or_jump()
+            else
+              fallback()
+            end
+          end, { "i", "s" }),
+
+          ["<S-Tab>"] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+              cmp.select_prev_item()
+            elseif luasnip.jumpable(-1) then
+              luasnip.jump(-1)
             else
               fallback()
             end
@@ -82,7 +104,7 @@ return {
           { name = "buffer", priority = 250, keyword_length = 3 },
         }),
         experimental = {
-          ghost_text = false, -- Disable ghost text
+          ghost_text = false,
         },
       })
 
@@ -98,4 +120,3 @@ return {
     end,
   },
 }
-

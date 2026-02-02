@@ -6,11 +6,11 @@ return {
 		config = function()
 			require("nightfox").setup({
 				options = {
-					transparent = false, 
+					transparent = false,
 				},
 				flavour = "duskfox",
 			})
-			vim.cmd.colorscheme("duskfox") -- Apply the theme
+			vim.cmd.colorscheme("duskfox")
 		end,
 	},
 }
